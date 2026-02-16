@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3003:3003"
+
+  reverse-proxy:
+    build: ./reverse-proxy
+    ports:
+      - "3002:3002"
+    environment:
+      - BACKEND_URL=http://backend:3003
+
+  forward-proxy:
+    build: ./forward-proxy
+    ports:
+      - "3001:3001"
+    environment:
+      - REVERSE_PROXY_URL=http://reverse-proxy:3002
+
+  spa:
+    build: ./spa
+    ports:
+      - "8080:80"
+    depends_on:
+      - forward-proxy
