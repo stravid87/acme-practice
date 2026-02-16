@@ -8,7 +8,7 @@ const REVERSE_PROXY_URL = process.env.REVERSE_PROXY_URL || 'http://localhost:300
 
 app.use(cors()); // Allow SPA to talk to this proxy
 
-app.get('/fetch-all', async (req, res) => {
+app.get(['/fetch-all', '/api-proxy/fetch-all'], async (req, res) => {
   try {
     // Calling the Reverse Proxy
     const response = await axios.get(`${REVERSE_PROXY_URL}/api/data`);

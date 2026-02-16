@@ -44,8 +44,8 @@ const fetchData = async () => {
   status.value = 'Communicating with Forward Proxy...';
 
   try {
-    // Pointing to our Forward Proxy on Port 3001
-    const response = await fetch('http://localhost:3001/fetch-all');
+    // Pointing to our Ingress (instead of '/' where the SPA UI lives).
+    const response = await fetch('/api-proxy/fetch-all');
     
     if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
     
