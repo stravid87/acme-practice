@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: forward-proxy
-        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/forward-proxy:v1
+        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/forward-proxy:v2
         ports:
         - containerPort: 3001
         env:
