@@ -8,6 +8,9 @@ const REVERSE_PROXY_URL = process.env.REVERSE_PROXY_URL || 'http://localhost:300
 
 app.use(cors()); // Allow SPA to talk to this proxy
 
+// Health check 
+app.get('/', (req, res) => res.status(200).send('Healthy'));
+
 app.get(['/fetch-all', '/api-proxy/fetch-all'], async (req, res) => {
   try {
     // Calling the Reverse Proxy

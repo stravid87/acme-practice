@@ -44,7 +44,7 @@ const fetchData = async () => {
   status.value = 'Communicating with Forward Proxy...';
 
   try {
-    // Pointing to our Ingress (instead of '/' where the SPA UI lives).
+    // Pointing to our Ingress (instead of '/' where the SPA UI lives)
     const response = await fetch('/api-proxy/fetch-all');
     
     if (!response.ok) throw new Error(`Proxy error: ${response.status}`);

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spa-deployment
+  namespace: k8s-tutorial
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spa
+  template:
+    metadata:
+      labels:
+        app: spa
+    spec:
+      containers:
+      - name: spa-container
+        # Ensure this matches your Registry path exactly
+        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/spa:v1
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spa-service
+  namespace: k8s-tutorial
+spec:
+  selector:
+    app: spa
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

@@ -1,6 +1,6 @@
 # Define variables
 PROJECT_ID="v2-layer8-playground"
-REGION="us-central1"
+REGION="asia-southeast1"
 REPO="k8s-exercise-repo"
 
 # Build and Push (Example for Backend)

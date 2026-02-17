@@ -1,11 +1,13 @@
 services:
   backend:
     build: ./backend
+    image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/backend:v1
     ports:
       - "3003:3003"
 
   reverse-proxy:
     build: ./reverse-proxy
+    image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/reverse-proxy:v1
     ports:
       - "3002:3002"
     environment:
@@ -13,6 +15,7 @@ services:
 
   forward-proxy:
     build: ./forward-proxy
+    image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/forward-proxy:v1
     ports:
       - "3001:3001"
     environment:
@@ -20,6 +23,7 @@ services:
 
   spa:
     build: ./spa
+    image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/spa:v1
     ports:
       - "8080:80"
     depends_on:

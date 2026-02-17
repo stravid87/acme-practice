@@ -1,38 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: forward-proxy
+  name: reverse-proxy
   namespace: k8s-tutorial
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: forward-proxy
+      app: reverse-proxy
   template:
     metadata:
       labels:
-        app: forward-proxy
+        app: reverse-proxy
     spec:
       containers:
-      - name: forward-proxy
-        image: us-central1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/forward-proxy:v1
+      - name: reverse-proxy
+        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/reverse-proxy:v1
         ports:
-        - containerPort: 3001
+        - containerPort: 3002
         env:
-        - name: REVERSE_PROXY_URL
+        - name: BACKEND_URL
           valueFrom:
             configMapKeyRef:
               name: proxy-chain-config
-              key: REVERSE_PROXY_URL
+              key: BACKEND_URL
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: forward-proxy-service
+  name: reverse-proxy-service
   namespace: k8s-tutorial
 spec:
   selector:
-    app: forward-proxy
+    app: reverse-proxy
   ports:
-    - port: 3001
-      targetPort: 3001
+    - port: 3002
+      targetPort: 3002

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image:  # us-central1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/backend:v1
+        image:  asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/backend:v1
         ports:
         - containerPort: 3003
 ---
