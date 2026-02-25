@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: my-test-cert
+  namespace: cert-manager
+spec:
+  dnsNames:
+    - my-app.example.com
+  secretName: my-test-cert-tls # This is where the .crt and .key will live
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer

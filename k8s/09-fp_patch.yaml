@@ -1,0 +1,18 @@
+#kubectl patch deployment forward-proxy -n k8s-tutorial --patch-file k8s/09-fp_patch.yaml
+spec:
+  template:
+    spec:
+      containers:
+      - name: forward-proxy
+        volumeMounts:
+        - name: certs-volume
+          mountPath: "/etc/certs"
+          readOnly: true
+      volumes:
+      - name: certs-volume
+        projected:
+          sources:
+          - secret:
+              name: forward-proxy-mtls-tls
+          - configMap:
+              name: internal-trust-bundle

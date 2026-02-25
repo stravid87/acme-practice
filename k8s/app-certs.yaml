@@ -1,0 +1,57 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: reverse-proxy-cert
+  namespace: k8s-tutorial
+spec:
+  secretName: reverse-proxy-tls-secret
+  duration: 2160h # 90 days
+  renewBefore: 360h # 15 days before expiry
+  subject:
+    organizations:
+      - your-org
+  commonName: reverse-proxy.k8s-tutorial.svc.cluster.local
+  dnsNames:
+    - reverse-proxy
+    - reverse-proxy.k8s-tutorial
+    - reverse-proxy.k8s-tutorial.svc.cluster.local
+  issuerRef:
+    name: my-org-cluster-issuer
+    kind: ClusterIssuer
+
+---
+# FP Cert 
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: forward-proxy-cert
+  namespace: k8s-tutorial
+spec:
+  secretName: forward-proxy-tls-secret
+  commonName: forward-proxy.k8s-tutorial.svc.cluster.local
+  dnsNames:
+    - forward-proxy
+    - forward-proxy.k8s-tutorial
+  issuerRef:
+    name: my-org-cluster-issuer
+    kind: ClusterIssuer
+
+
+
+
+---
+# Backend Cert
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: backend-cert
+  namespace: k8s-tutorial
+spec:
+  secretName: backend-tls-secret
+  commonName: backend.k8s-tutorial.svc.cluster.local
+  dnsNames:
+    - backend
+    - backend.k8s-tutorial
+  issuerRef:
+    name: my-org-cluster-issuer
+    kind: ClusterIssuer

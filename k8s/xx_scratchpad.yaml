@@ -15,19 +15,13 @@ spec:
     spec:
       containers:
       - name: forward-proxy
-        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/forward-proxy:v2
+        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/forward-proxy:v1
         ports:
-        - containerPort: 3001
+        - containerPort: 8080
         volumeMounts:
         - name: mtls-certs
           mountPath: /etc/certs
           readOnly: true
-        env:
-        - name: REVERSE_PROXY_URL
-          valueFrom:
-            configMapKeyRef:
-              name: proxy-chain-config
-              key: REVERSE_PROXY_URL
       volumes:
       - name: mtls-certs
         projected:
@@ -36,15 +30,3 @@ spec:
               name: forward-proxy-mtls-tls
           - configMap:
               name: internal-trust-bundle
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: forward-proxy-service
-  namespace: k8s-tutorial
-spec:
-  selector:
-    app: forward-proxy
-  ports:
-    - port: 3001
-      targetPort: 3001

@@ -1,0 +1,39 @@
+# kubectl apply -f -
+# 1. The Bootstrapper
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: k8s-tutorial
+spec:
+  selfSigned: {}
+
+---
+
+# 2. The Golden Key (Root CA)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: internal-root-ca
+  namespace: k8s-tutorial
+spec:
+  isCA: true
+  commonName: my-private-ca
+  secretName: root-ca-secret
+  duration: 87600h # 10 years
+  renewBefore: 360h # 15 days
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer
+
+---
+
+# 3. The Actual CA (The Signing Machine)
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: internal-ca-issuer
+  namespace: k8s-tutorial
+spec:
+  ca:
+    secretName: root-ca-secret

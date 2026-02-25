@@ -1,0 +1,30 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: forward-proxy-cert
+  namespace: cert-manager
+spec:
+  secretName: forward-proxy-tls-secret
+  commonName: forward-proxy.k8s-tutorial.svc.cluster.local
+  dnsNames:
+    - forward-proxy
+    - forward-proxy.k8s-tutorial
+  issuerRef:
+    name: app-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: backend-cert
+  namespace: cert-manager
+spec:
+  secretName: backend-tls-secret
+  commonName: backend.k8s-tutorial.svc.cluster.local
+  dnsNames:
+    - backend
+    - backend.k8s-tutorial
+  issuerRef:
+    name: app-issuer
+    kind: Issuer
