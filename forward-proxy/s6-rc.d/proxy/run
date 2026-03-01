@@ -1,0 +1,4 @@
+#!/command/with-contenv sh
+# Move to the app directory and start Node
+cd /app
+exec node index.js

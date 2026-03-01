@@ -1,0 +1,18 @@
+# Enable the Ping/Healthcheck endpoint
+ping:
+  entryPoint: "traefik"
+
+entryPoints:
+  traefik:
+    address: ":8081" # Internal dashboard/health port
+  websecure:
+    address: ":443"  # This is the port your curl is hitting
+
+providers:
+  file:
+    directory: /etc/traefik/
+    watch: true
+
+# This ensures we see what's happening in the logs
+log:
+  level: DEBUG

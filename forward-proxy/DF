@@ -1,0 +1,36 @@
+# --- Stage 1: Get Traefik ---
+FROM traefik:v3.0 AS traefik_bin
+
+# --- Stage 2: Build Node App ---
+FROM node:20-slim AS node_builder
+WORKDIR /app
+COPY s6-rc.d/proxy/package*.json ./
+RUN npm install --no-audit
+COPY s6-rc.d/proxy/ .
+
+# --- Stage 3: Final Unified Image ---
+FROM node:20-alpine
+WORKDIR /app
+
+# 1. Install S6-Overlay
+ADD https://github.com/just-containers/s6-overlay/releases/download/v3.1.6.2/s6-overlay-noarch.tar.xz /tmp
+ADD https://github.com/just-containers/s6-overlay/releases/download/v3.1.6.2/s6-overlay-x86_64.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
+
+# 2. Copy Binaries & App
+COPY --from=traefik_bin /usr/local/bin/traefik /usr/local/bin/traefik
+COPY --from=node_builder /app /app
+
+# 3. Copy Configs & Certs
+COPY ./s6-rc.d /etc/s6-overlay/s6-rc.d
+COPY ./traefik-config /etc/traefik
+COPY ./certs /etc/traefik/certs
+
+# 4. Final Permissions & Windows Line Ending Fix
+RUN apk add --no-cache dos2unix && \
+    find /etc/s6-overlay/s6-rc.d -type f -exec dos2unix {} + && \
+    chmod -R +x /etc/s6-overlay/s6-rc.d/
+
+ENTRYPOINT ["/init"]
+EXPOSE 443

@@ -1,0 +1,17 @@
+http:
+  routers:
+    fp-router:
+      rule: "Host(`localhost`)"
+      service: fp-service
+      tls: {} # Simple TLS for local testing
+
+  services:
+    fp-service:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:8080"
+
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/server.crt
+      keyFile: /etc/traefik/certs/server.key

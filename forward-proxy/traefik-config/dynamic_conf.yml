@@ -1,0 +1,19 @@
+http:
+  routers:
+    to-node-app:
+      rule: "Host(`localhost`)"
+      entryPoints:
+        - websecure
+      service: node-service
+      tls: {} # This tells Traefik to use the certs below
+
+  services:
+    node-service:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:8080" # Matches your Express app
+
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/server.crt
+      keyFile: /etc/traefik/certs/server.key

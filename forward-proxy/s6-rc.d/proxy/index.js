@@ -2,9 +2,9 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const app = express();
-const PORT = 3001;
-const REVERSE_PROXY_URL = process.env.REVERSE_PROXY_URL || 'http://localhost:3002';
-// Update your axios call to use TARGET_URL
+const PORT = 8080;
+const HOST = '127.0.0.1';
+const REVERSE_PROXY_URL = process.env.REVERSE_PROXY_URL;
 
 app.use(cors()); // Allow SPA to talk to this proxy
 
@@ -27,4 +27,4 @@ app.get(['/fetch-all', '/api-proxy/fetch-all'], async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`Forward Proxy listening on port ${PORT}`));
+app.listen(PORT, HOST, () => console.log(`Forward Proxy listening on port ${PORT}`));
