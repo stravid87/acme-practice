@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>K8s Exercise: Request Chain</h1>
+    <h1>K8s Exercise: Request Chain: v1</h1>
     <p>Status: <strong>{{ status }}</strong></p>
     
     <button @click="fetchData" :disabled="loading">
@@ -45,7 +45,7 @@ const fetchData = async () => {
 
   try {
     // Pointing to our Ingress (instead of '/' where the SPA UI lives)
-    const response = await fetch('/api-proxy/fetch-all');
+    const response = await fetch(`${import.meta.env.VITE_FORWARD_PROXY_URL}/api-proxy/fetch-all`);
     
     if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
     
