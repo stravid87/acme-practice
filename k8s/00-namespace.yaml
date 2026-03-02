@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sidecar
+  labels:
+    name: sidecar
+    # Optional: label for service mesh or network policies
+    environment: lab

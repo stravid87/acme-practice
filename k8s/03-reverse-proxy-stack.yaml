@@ -1,0 +1,66 @@
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: mtls-mandatory
+  namespace: sidecar
+spec:
+  clientAuth:
+    secretNames: [root-ca-secret]
+    clientAuthType: RequireAndVerifyClientCert
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reverse-proxy
+  namespace: sidecar
+spec:
+  selector:
+    matchLabels:
+      app: reverse-proxy
+  template:
+    metadata:
+      labels:
+        app: reverse-proxy
+    spec:
+      containers:
+      - name: node-app
+        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/reverse-proxy:v1
+      - name: traefik-sidecar
+        image: traefik:v3.0
+        args:
+          - "--providers.kubernetesCRD"
+          - "--entrypoints.websecure.address=:443"
+        ports:
+          - containerPort: 443
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rp-mtls-ingress
+  namespace: sidecar
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`reverse-proxy-service.sidecar.svc.cluster.local`)
+    kind: Rule
+    services:
+    - name: rp-local-service # We will define this below
+      port: 3002             # The port your Reverse Proxy Node app listens on
+  tls:
+    secretName: rp-server-tls-secret # The server identity cert
+    options:
+      name: mtls-mandatory           # ENFORCE the bouncer rule
+---
+# Internal Service to point Traefik to the Node container in the SAME pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: rp-local-service
+  namespace: sidecar
+spec:
+  ports:
+    - port: 3002
+      targetPort: 3002 # Ensure this matches your Reverse Proxy's app.listen(3002)
+  selector:
+    app: reverse-proxy

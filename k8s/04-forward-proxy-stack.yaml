@@ -1,0 +1,88 @@
+# 1. Professional CA Sync
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sidecar-trust-bundle
+  namespace: sidecar
+spec:
+  isCA: true
+  commonName: "internal-mTLS-ca"
+  secretName: root-ca-secret
+  issuerRef:
+    name: internal-ca-issuer
+    kind: ClusterIssuer
+---
+# 2. Egress Transport
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: egress-transport
+  namespace: sidecar
+spec:
+  certificatesSecrets: [fp-client-tls-secret]
+  rootCAsSecrets: [root-ca-secret]
+---
+# 3. IngressRoute (The Bridge)
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: forward-to-reverse-route
+  namespace: sidecar
+spec:
+  entryPoints:
+    - egress-port
+  routes:
+  - match: PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: reverse-proxy-service
+      port: 443
+      serversTransport: egress-transport # This is the mTLS "Magic"
+---
+# 4. Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forward-proxy
+  namespace: sidecar
+spec:
+  selector:
+    matchLabels:
+      app: forward-proxy
+  template:
+    metadata:
+      labels:
+        app: forward-proxy
+    spec:
+      containers:
+      - name: node-app
+        image: asia-southeast1-docker.pkg.dev/v2-layer8-playground/k8s-exercise-repo/forward-proxy:v1
+        env:
+          - name: REVERSE_PROXY_URL
+            value: "http://localhost:8080"
+        ports:
+          - containerPort: 3001
+      - name: traefik-sidecar
+        image: traefik:v3.0
+        args: 
+          - "--providers.kubernetesCRD"
+          - "--entrypoints.egress-port.address=:8080"
+          - "--log.level=DEBUG"
+        ports:
+          - containerPort: 8080
+            name: egress-port
+---
+# 5. Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: forward-proxy-service
+  namespace: sidecar
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
+  selector:
+    app: forward-proxy

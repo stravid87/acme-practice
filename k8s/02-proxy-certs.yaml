@@ -1,0 +1,28 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: fp-client-cert
+  namespace: sidecar
+spec:
+  secretName: fp-client-tls-secret
+  duration: 2160h # 90 days
+  renewBefore: 360h # 15 days
+  commonName: "forward-proxy-client"
+  issuerRef:
+    name: internal-ca-issuer
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rp-server-cert
+  namespace: sidecar
+spec:
+  secretName: rp-server-tls-secret
+  commonName: "reverse-proxy-service.sidecar.svc.cluster.local"
+  dnsNames:
+    - "reverse-proxy-service.sidecar.svc.cluster.local"
+    - "reverse-proxy-service"
+  issuerRef:
+    name: internal-ca-issuer
+    kind: ClusterIssuer
