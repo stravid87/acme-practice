@@ -30,7 +30,8 @@ app.get('/test-rp', async (req, res) => {
     // This now catches errors from the Sidecar, not just network errors
     res.status(500).json({ 
       error: "Sidecar failed to complete mTLS handshake",
-      message: err.message
+      message: err.message,
+      raw_error: err.toString()
     });
   }
 });

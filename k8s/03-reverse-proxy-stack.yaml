@@ -29,6 +29,7 @@ spec:
         image: traefik:v3.0
         args:
           - "--providers.kubernetesCRD"
+          - "--providers.kubernetescrd.namespaces=sidecar"
           - "--entrypoints.websecure.address=:443"
         ports:
           - containerPort: 443
@@ -42,7 +43,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`reverse-proxy-service.sidecar.svc.cluster.local`)
+  - match: Host(`reverse-proxy-service`) || Host(`reverse-proxy-service.sidecar.svc.cluster.local`)
     kind: Rule
     services:
     - name: rp-local-service # We will define this below

@@ -19,6 +19,9 @@ metadata:
   name: egress-transport
   namespace: sidecar
 spec:
+# CRITICAL: This must match the Host header in your axios call
+  serverName: "reverse-proxy-service.sidecar.svc.cluster.local"
+  insecureSkipVerify: true
   certificatesSecrets: [fp-client-tls-secret]
   rootCAsSecrets: [root-ca-secret]
 ---
@@ -68,6 +71,9 @@ spec:
           - "--providers.kubernetesCRD"
           - "--entrypoints.egress-port.address=:8080"
           - "--log.level=DEBUG"
+          - "--providers.kubernetescrd.namespaces=sidecar" 
+          - "--entrypoints.web.address=:80"
+          - "--entrypoints.websecure.address=:443"
         ports:
           - containerPort: 8080
             name: egress-port
